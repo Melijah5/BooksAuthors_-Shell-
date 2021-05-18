@@ -1,0 +1,206 @@
+
+
+
+***************** Query: Create 5 books with the following names: C Sharp, Java, Python, PHP, Ruby *****************************
+
+>> from books_authors_app.models import Book , Author 
+>>> Book
+<class 'books_authors_app.models.Book'>
+>>> Author  
+<class 'books_authors_app.models.Author'>
+
+
+>>>C_Sharp = Book.objects.create(title = 'C Sharp', desc ='high level programming language')
+<Book: Book object (1)>
+>>>Java = Book.objects.create(title = 'Java', desc ='high level programming language')  
+<Book: Book object (2)>
+>>>python = Book.objects.create(title = 'python', desc ='high level programming language')
+<Book: Book object (3)>
+>>>PHP = Book.objects.create(title = 'PHP' , desc = 'popular general-purpose scripting language')
+<Book: Book object (4)>
+>>>Ruby = Book.objects.create(title = 'Ruby' , desc = 'open source programming language')
+<Book: Book object (5)>
+>>>  
+
+
+***************  Query: Create 5 different authors: Jane Austen, Emily Dickinson, Fyodor Dostoevsky, William Shakespeare, Lau Tzu **
+
+>>> Jane_Austen = Author.objects.create(first_name= 'jane', last_name='Austen')
+>>> Emily_Dickinson = Author.objects.create(first_name= 'Emily', last_name='Dickinson')      
+>>> Fyodor_Dostoevsky = Author.objects.create(first_name= 'Fyodor', last_name='Dostoevsky')  
+>>> William_Shakespeare = Author.objects.create(first_name= 'William', last_name='Shakespeare')
+>>> Lau_Tzu = Author.objects.create(first_name= 'Lau', last_name='Tzu')                      
+>>> 
+
+**************** Add a new text field in the authors table called 'notes'*************************************************************
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=45)
+    last_name = models.CharField(max_length=45)
+    books = models.ManyToManyField(Book, related_name="authors")
+    notes = models.TextField(default = 'none')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+****************** Create and run the migration files to update the table in your database. *******************************************
+
+python manage.py makemigrations
+
+python manage.py migrate
+
+
+******************  Query: Change the name of the C Sharp book to C#  *****************************************************************
+
+>>> C_sharp = Book.objects.get(title = 'C Sharp')
+>>> C_sharp.title= 'C#' 
+>>> C_sharp.save()     
+>>> 
+>>> Book.objects.all()
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming language>, <Book: python high level programming language>,
+ <Book: PHP PHPpopular general-purpose scripting language>, <Book: Ruby open source programming language>]>
+>>>
+
+*******************  Query: Change the first name of the 4th author to Bill  ***********************************************************
+
+>>> fourth = Author.objects.get(id=4)  
+>>> fourth
+<Author: Author object (4)>
+>>> fourth.first_name= 'Bill'
+>>> fourth.save()
+>>> Author.objects.all()
+<QuerySet [<Author: jane Austen>, <Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>, <Author: Lau Tzu>]>
+>>>
+
+
+********************  Query: Assign the first author to the first 2 books  **************************************************************
+
+>>>
+>>> Jane_Austen.books.add(C_Sharp)
+>>> Jane_Austen.books.add(Java)        
+>>> Jane_Austen.books.all()    
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>]>
+>>>
+
+********************* Query: Assign the second author to the first 3 books   *************************************************************
+
+>>> Emily_Dickinson= Author.objects.get(id=8) 
+>>> Java = Book.objects.get(title = 'Java') 
+>>> Emily_Dickinson.books.add(Java)
+>>> Emily_Dickinson.books.all()    
+<QuerySet [<Book: Java high level programming languag>]>
+>>>
+
+>>> Book.objects.get(title = 'python') 
+<Book: python high level programming language>
+>>> python = Book.objects.get(title = 'python') 
+>>> Emily_Dickinson.books.add(python) 
+<QuerySet [<Book: Java high level programming languag>, <Book: python high level programming language>]>
+>>> 
+
+
+>>> c_sharp = Book.objects.get(title='C#')
+>>> c_sharp                               
+<Book: C# high level programming language>
+>>> Emily_Dickinson.books.add(c_sharp) 
+>>> Emily_Dickinson.books.all()       
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>, <Book: python high level programming language>]>
+>>>
+
+*********************  Query: Assign the third author to the first 4 books  *****************************************************************
+
+>>> Fyodor_Dostoevsky=Author.objects.get(first_name='Fyodor') 
+>>> c_sharp = Book.objects.get(title='C#')                   
+>>> Fyodor_Dostoevsky.books.add(c_sharp)                     
+>>> 
+>>> Java = Book.objects.get(title='Java')    
+>>> Fyodor_Dostoevsky.books.add(Java)     
+>>> 
+>>> python = Book.objects.get(title='python') 
+>>> Fyodor_Dostoevsky.books.add(python) 
+>>> 
+>>> PHP = Book.objects.get(title='PHP') 
+>>> Fyodor_Dostoevsky.books.add(PHP)    
+>>> 
+>>> Fyodor_Dostoevsky.books.all()       
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>, <Book: python high level programming language>, <Book: PHP popular general-purpose scripting language>]>
+>>>
+
+
+*********************  Query: Assign the fourth author to the first 5 books (or in other words, all the books) ********************************
+
+
+>>> Author.objects.all()
+<QuerySet [<Author: jane Austen>, <Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>, <Author: Lau Tzu>]>
+>>> Bill_Shakespeare = Author.objects.get(first_name='Bill')
+>>> Bill_Shakespeare                                        
+<Author: Bill Shakespeare>
+>>>
+>>> c_sharp = Book.objects.get(title='C#')
+>>> Bill_Shakespeare.books.add(c_sharp)                     
+>>> 
+>>> Java = Book.objects.get(title='Java')
+>>> Bill_Shakespeare.books.add(Java)       
+>>> 
+>>> python = Book.objects.get(title='python')
+>>> Bill_Shakespeare.books.add(python) 
+>>> 
+>>> PHP = Book.objects.get(title='PHP')       
+>>> Bill_Shakespeare.books.add(PHP)           
+>>> 
+>>> Ruby = Book.objects.get(title='Ruby') 
+>>> Bill_Shakespeare.books.add(Ruby)      
+>>> 
+>>> Bill_Shakespeare.books.all()    
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>, <Book: python high level programming language>, <Book: PHP popular general-purpose scripting language>, <Book: Ruby open source programming language>]>
+>>>
+
+
+**********************  Query: Retrieve all the authors for the 3rd book   **********************************************************************
+
+>>> python.authors.all() 
+<QuerySet [<Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>]>
+>>>
+
+********************** Query: Remove the first author of the 3rd book   *************************************************************************
+
+>>> python = Book.objects.get(title='python')
+>>> Emily_Dickinson = Author.objects.get(first_name= 'Emily')
+>>>
+>>> python.authors.remove(Emily_Dickinson)                              
+>>> 
+>>> python.authors.all()
+<QuerySet [<Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>]>
+>>>
+
+********************** Query: Add the 5th author as one of the authors of the 2nd book  **********************************************************
+
+
+>>> Java = Book.objects.get(title='Java')  
+>>> Java.authors.all() 
+<QuerySet [<Author: jane Austen>, <Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>]>
+>>> Author.objects.all() 
+<QuerySet [<Author: jane Austen>, <Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>, <Author: Lau Tzu>]>
+>>> Lau_Tzu = Author.objects.get(first_name='Lau')
+>>> Lau_Tzu.books.add(Java)                       
+>>> 
+>>> Java.authors.all()
+<QuerySet [<Author: jane Austen>, <Author: Emily Dickinson>, <Author: Fyodor Dostoevsky>, <Author: Bill Shakespeare>, <Author: Lau Tzu>]>
+>>>
+
+********************** Query: Find all the books that the 3rd author is part of *******************************************************************
+
+>>> Fyodor_Dostoevsky= Author.objects.get(first_name='Fyodor')
+>>> Fyodor_Dostoevsky.books.all()                             
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>, <Book: python high level programming language>, <Book: PHP popular general-purpose scripting language>]>
+>>>
+
+********************* Query: Find all the authors that contributed to the 5th book ***************************************************************
+
+>>> Book.objects.all()
+<QuerySet [<Book: C# high level programming language>, <Book: Java high level programming languag>, <Book: python high level programming language>, <Book: PHP popular general-purpose scripting language>, <Book: Ruby open source programming language>]>
+
+>>> Ruby = Book.objects.get(title = 'Ruby')
+>>> Ruby.authors.all()
+<QuerySet [<Author: Bill Shakespeare>]>
+>>>
+
